@@ -1,0 +1,6 @@
+deps = ["CPLEX",
+		"Gurobi",
+		"JuMP",
+		"Mosek",
+		"MosekTools",
+		"Xpress"]
