@@ -1,33 +1,35 @@
 using JuMP,MathOptInterface;
 using Gurobi;
 
-# Consult https://www.gurobi.com/documentation/8.1/refman/refman.html
+# Consult for more parameters https://www.gurobi.com/documentation/8.1/refman/refman.html
 
-model = read_from_file("air05.mps.gz");
-#model = read_from_file("25fv47.mps");
+# Reading the model
+#model = read_from_file("test_cases\\examples\\lp.mps");
+model = read_from_file("test_cases\\examples\\milp.mps");
+
+# Setting Gurobi as optimizer
 set_optimizer(model,Gurobi.Optimizer);
 
 ### Set Number of Thread used ###
 
-# Min 0 (Automatic) Max 16 (My PC)
-# set_optimizer_attribute(model, "Threads", 16) # Possibly obsolete
+# Through MOI for Gurobi,Xpress,CPLEX
 MOI.set(model, MOI.NumberOfThreads(), 16)
 
 ### Set Algorithm used ###
 
-# -1 Automatic, 0 Primal Simplex. 1 Dual Simplex
-#  2 Barrier, 3 Concurrent,
-# 4 deterministic concurrent, 5 deterministic concurrent simplex
-# More Info https://www.gurobi.com/documentation/8.1/refman/method.html#parameter:Method
-# The Following applies for the root of B&B and single LP
+# Options are: 
+# -1=automatic, 0=primal simplex, 
+# 1=dual simplex, 2=barrier,
+# 3=concurrent, 4=deterministic concurrent,
+# 5=deterministic concurrent simplex.
 
+# The Following applies for the root of B&B and single LP
 set_optimizer_attribute(model, "Method", 0)
 
-# For the LP relaxations of B&B
-# Parameters Same as above (-1 to 2)
+# For the LP relaxations of B&B - Parameters same as above
 set_optimizer_attribute(model, "NodeMethod", 0)
 
-### Set Tolearnces used ###
+### Set Tolerances used ###
 
 # Primal/ Dual feasibility tolerance - Max 1e-2 Min 1e-9 Def 1e-6
 set_optimizer_attribute(model, "FeasibilityTol", 1e-6)

@@ -3,29 +3,32 @@ using Xpress;
 
 # Consult https://www.fico.com/fico-xpress-optimization/docs/latest/solver/optimizer/HTML/GUID-3BEAAE64-B07F-302C-B880-A11C2C4AF4F6.html
 
-#model = read_from_file("air05.mps.gz");
-model = read_from_file("25fv47.mps");
+# Reading the model
+#model = read_from_file("test_cases\\examples\\lp.mps");
+model = read_from_file("test_cases\\examples\\milp.mps");
+
+# Setting CPLEX as optimizer
 set_optimizer(model,Xpress.Optimizer);
 
 ### Set Number of Thread used ###
 
-# Min 0 (Automatic) Max 16 (My PC)
-# set_optimizer_attribute(model, "Threads", 16) # Possibly obsolete
+# Through MOI for Gurobi,Xpress,CPLEX
 MOI.set(model, MOI.NumberOfThreads(), 16)
 
 ### Set Algorithm used ###
 
+# Options are: 
 # 1 Automatic, 2 Dual Simplex,
 # 3 Primal Simplex, 4 Barrier
-# The Following applies for the LP and B&B
+
+# The Following applies for every LP problem
 set_optimizer_attribute(model, "DEFAULTALG", 4)
 
-### Set Tolearnces used ###
+### Set Tolerances used ###
 
 # Primal/ Dual feasibility tolerance - Max NaN Min NaN Def 1e-6
 set_optimizer_attribute(model, "FEASTOL", 1e-6)
 set_optimizer_attribute(model, "OPTIMALITYTOL", 1e-6)
-
 
 # Barrier convergence tolerance - Def Nan (Automatic 0)
 set_optimizer_attribute(model, "BARGAPSTOP", 1e-8)
