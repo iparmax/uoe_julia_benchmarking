@@ -1,4 +1,0 @@
-Problem,CPLEX_status,CPLEX_result,CPLEX_time,CPLEX_node_count,CPLEX_gap,GuRoBi_status,GuRoBi_result,GuRoBi_time,GuRoBi_node_count,GuRoBi_gap,Xpress_status,Xpress_result,Xpress_time,Xpress_node_count,Xpress_gap,Mosek_status,Mosek_result,Mosek_time,Mosek_node_count,Mosek_gap
-air05.mps.gz,Optimal,26374.0,4.046999931335449,6590,0.0,Optimal,26374.0,2.813627243041992,1509,0.0,Time Limit,29203.0,4.733000040054321,51,0.10366504494794147,Time Limit,26426.999999999985,5.156,775,0.009652517769216553
-app1-1.mps.gz,Optimal,-3.0,0.26800012588500977,0,0.0,Optimal,-3.0,0.5941314697265625,36,0.0,Optimal,-3.0,0.2569999694824219,1,0.0,Time Limit,0.0,5.047,1775,-1.0
-app1-2.mps.gz,Time Limit,Inf,Inf,0,Inf,Time Limit,-23.0,5.061132431030273,1,5.608695652173913,Time Limit,Inf,Inf,0,Inf,Time Limit,0.0,5.078,0,-1.0
