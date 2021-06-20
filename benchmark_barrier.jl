@@ -63,6 +63,14 @@ conv_par_key = Dict("FICO Xpress" => "BARGAPSTOP","GuRoBi" => "BarConvTol",
 					"IBM CPLEX" => "CPXPARAM_Barrier_ConvergeTol",
 					"Mosek" => "MSK_DPAR_INTPNT_TOL_REL_GAP","Tulip" => "IPM_ToleranceRGap");
 
+# Crossover Off parameter
+crossover_par = Dict("Clp" => "SolveType","FICO Xpress" => "CROSSOVER",
+						 "GuRoBi" => "Crossover", "IBM CPLEX" => "CPXPARAM_SolutionType",
+				 		 "Mosek" => "MSK_IPAR_INTPNT_BASIS",);
+
+crossover_par_key = Dict("Clp" => 4,"FICO Xpress" => 0,
+				     "GuRoBi" => 0, "IBM CPLEX" => 2,
+					 "Mosek" => 0);
 
 ### Mittelman Test Cases - 40 Problems ###
 
@@ -71,16 +79,17 @@ lp_list = DataFrame(CSV.File("test_cases\\mittelman_selection_lp\\lp_mittelman_l
 total_lps = size(lp_list)[1];
 
 ### Global Parameters ### 
-time_limit = 10
+time_limit = 60*20
 threads = 1
-solver = "Tulip"
+solver = "IBM CPLEX"
 tolerance = findmin(primal_dual_feas_def)[1]
 conv_tolerance = findmin(convergence_def)[1]
 solver_results = DataFrame(Problem = String[],Status = String[],
 					Obj_Value = Float64[],Solver_Time = Float64[])
+no_crossover = false
 
 # Main Loop
-for t in 1:total_lps
+for t in 3:3
 
 	# Reading model from .mps file
 	model = read_from_file("test_cases\\mittelman_selection_lp\\$(lp_list[t,1])");
@@ -105,6 +114,12 @@ for t in 1:total_lps
 	
 	if solver!="Clp"
 		set_optimizer_attribute(model, conv_par_key[solver],conv_tolerance);
+	end
+	
+	if no_crossover
+		if solver!="Tulip"
+			set_optimizer_attribute(model, crossover_par[solver],crossover_par_key[solver]);	
+		end
 	end
 	
 	# Execute Model
