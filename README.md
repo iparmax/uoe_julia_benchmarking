@@ -4,5 +4,11 @@ Repository containing relevant code used in the development of the dissertation 
 ## Installation 
 Consult the requirements file for the required packages needed to use the solvers mentioned. Most commercial solvers (CPLEX,Gurobi,etc.) , require both a manual installation (with relevant license) and a Julia Package (mentioned in the requirements.txt).
 
-## benchmark.jl
-A function has been created that returns terminal condition of the solver, obejctive value and execution time for a given solver, provided that a model has been passed in the .mps format. (Ongoing)
+## benchmark_simplex.jl
+An interface for benchmarking six solvers (Clp, FICO Xpress, GuRoBi, IBM CPLEX, HiGHS, Mosek), using simplex based algorithms. Parameters such as primal feasiblity and dual feasibity can be universally set for fair comparison. Also parameters such as time limits and multiple threads can be included for solvers that support them. Consult the solvers_info pdf for proper usage.
+
+## benchmark_barrier.jl
+An interface for benchmarking six solvers (Clp, FICO Xpress, GuRoBi, IBM CPLEX, Tulip, Mosek). Parameters such as primal feasiblity and dual feasibity can be universally set for fair comparison. Parameters such as barrier convergence tolerance can't be influenced by all solvers but all solvers have the same default tolerance. Additionally, the Tulip solver does not support crossover, so there is the option of disabling crossover for all solvers.Finally, parameters such as time limits and multiple threads can be included for solvers that support them. Consult the solvers_info pdf for proper usage.
+
+## benchmark_milp.jl
+An interface for benchmarking five solvers (FICO Xpress, GuRoBi, IBM CPLEX, SCIP, Mosek). Parameters such as primal feasiblity and dual feasibity, integrality tolerance, absolute and relative gap can be universally set for fair comparison. Also, parameters such as time limits and multiple threads can be included for solvers that support them. Consult the solvers_info pdf for proper usage.
