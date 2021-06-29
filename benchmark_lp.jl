@@ -123,6 +123,15 @@ crossover_par_key = Dict("Clp" => 4,"FICO Xpress" => 0,
 lp_list = DataFrame(CSV.File("test_cases\\mittelman_selection_lp\\lp_mittelman_list.csv"));
 total_lps = size(lp_list)[1];
 
+
+
+
+
+
+
+
+
+
 ### Global Parameters ###
 
 # Mode can be Automatic, Simplex or Barrier #
@@ -153,7 +162,18 @@ solver_results = DataFrame(Problem = String[],Status = String[],
 
 # Range of problems solved #
 start = 1
-finish = 10#total_lps
+finish = total_lps
+
+### Global Parameters ###
+
+
+
+
+
+
+
+
+
 
 ### Main Loop begins ###
 @time for t in start:finish
