@@ -65,67 +65,76 @@ lp_list = DataFrame(CSV.File("test_cases\\mittelman_selection_lp\\lp_mittelman_l
 total_lps = size(lp_list)[1];
 
 ### Global Parameters ### 
-time_limit = 10
+time_limit = 30*60
 threads = 1
 algorithm = "dual simplex"
-solver = "GuRoBi"
+solver = "HiGHS"
 tolerance = findmin(primal_dual_feas_def)[1]
 solver_results = DataFrame(Problem = String[],Status = String[],
-					Obj_Value = Float64[],Solver_Time = Float64[])
+					Obj_Value = Float64[],Iterations = Int64[],Solver_Time = Float64[],Julia_Time =Float64[] )
 
 # Main Loop
-@time for t in 1:total_lps
+@time for t in 15:38#total_lps
+	if t != 6 && t != 12
+		# Reading model from .mps file
+		model = read_from_file("test_cases\\mittelman_selection_lp\\$(lp_list[t,1])");
+		println(lp_list[t,1])
+		# Set Optimizer and time limit
+		set_optimizer(model,simplex_optimizers[solver]);
+		set_time_limit_sec(model,time_limit);
 
-	# Reading model from .mps file
-	model = read_from_file("test_cases\\mittelman_selection_lp\\$(lp_list[t,1])");
-
-	# Set Optimizer and time limit
-	set_optimizer(model,simplex_optimizers[solver]);
-	set_time_limit_sec(model,time_limit);
-
-	# Set Threads Used
-	if solver != "Clp"
-		set_optimizer_attribute(model, select_threads_key[solver],threads);
-	end
-
-	# Set algorithm
-	if algorithm == "dual simplex"
-		set_optimizer_attribute(model, select_algorithm_key[solver],dual_simplex_key[solver]);
-	else
-		if solver == "HiGHS"
-			break
-		else
-			set_optimizer_attribute(model, select_algorithm_key[solver],primal_simplex_key[solver]);
+		# Set Threads Used
+		if solver != "Clp"
+			set_optimizer_attribute(model, select_threads_key[solver],threads);
 		end
-	end
 
-	# Set Universal Tolerance
-	set_optimizer_attribute(model, primal_par_key[solver],tolerance);
-	set_optimizer_attribute(model, dual_par_key[solver],tolerance);
+		# Set algorithm
+		if algorithm == "dual simplex"
+			set_optimizer_attribute(model, select_algorithm_key[solver],dual_simplex_key[solver]);
+		else
+			if solver == "HiGHS"
+				break
+			else
+				set_optimizer_attribute(model, select_algorithm_key[solver],primal_simplex_key[solver]);
+			end
+		end
 
-	# Execute Model
-	sol_time = @elapsed optimize!(model);
+		# Set Universal Tolerance
+		#set_optimizer_attribute(model, primal_par_key[solver],tolerance);
+		#set_optimizer_attribute(model, dual_par_key[solver],tolerance);
 
-	# Results
-	if termination_status(model) == MOI.OPTIMAL
-		status = "Optimal"
-		obj_value = objective_value(model)
-	elseif termination_status(model) == MOI.TIME_LIMIT
-		status = "Time Limit"
-		try
+		# Execute Model
+		julia_time = @elapsed optimize!(model);
+
+		# Results
+		if termination_status(model) == MOI.OPTIMAL
+			status = "Optimal"
 			obj_value = objective_value(model)
-			sol_time = time_limit
-		catch
+			sol_time = solve_time(model)
+			
+		elseif termination_status(model) == MOI.TIME_LIMIT
+			status = "Time Limit"
+			try
+				obj_value = objective_value(model)
+				sol_time = time_limit
+			catch
+				obj_value = Inf
+				sol_time = Inf
+			end
+		else
+			status = "Infeasible"
 			obj_value = Inf
 			sol_time = Inf
 		end
-	else
-		status = "Infeasible"
-		obj_value = Inf
+		
+		iterations = 0 
+		if solver != "Clp"
+			iterations = simplex_iterations(model)
+		end
+		
+		results = (lp_list[t,1],status,obj_value,iterations,sol_time,julia_time)
+		push!(solver_results, results)
 	end
-	
-	results = (lp_list[t,1],status,obj_value,sol_time)
-	push!(solver_results, results)
 end
 
-CSV.write("results\\simplex_$(solver)_$(total_lps)_problems.csv", solver_results)
+CSV.write("results\\$(algorithm)_$(solver)_$(total_lps-1)_problems.csv", solver_results)
