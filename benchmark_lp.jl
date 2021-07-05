@@ -135,21 +135,21 @@ total_lps = size(lp_list)[1];
 ### Global Parameters ###
 
 # Mode can be Automatic, Simplex or Barrier #
-mode = "Automatic"
+mode = "Barrier"
 
 # Time limit strictly integer - if zero no time limit set #
-time_limit = 30
+time_limit = 30*60
 
 # Threads in the 1-16 range due to CPU restrictions - Not in use if Automatic mode is on # 
 threads = 1
 
 # Selecting Solver
-solver = "GuRoBi"
+solver = "Mosek"
 
 # Simplex algorithm selection - irrelevant if mode not simplex
 simplex_algorithm = "primal"
 
-# Crossover on/off
+# Crossover on/off - irrelevant if mode not barrier
 crossover = "on"
 
 # Any appropriate float - if zero no influence is set on different tolerances
@@ -162,14 +162,9 @@ solver_results = DataFrame(Problem = String[],Status = String[],
 
 # Range of problems solved #
 start = 1
-finish = total_lps
+finish = 3#total_lps
 
 ### Global Parameters ###
-
-
-
-
-
 
 
 
@@ -325,7 +320,7 @@ finish = total_lps
 	# Pushing results to CSV
 	results = (lp_list[t,1],status,obj_value,iterations,sol_time,julia_time)
 	push!(solver_results, results)
-	println("Results were pushed to file. Optimizations Ends.")
+	println("Results were pushed to file. Optimization of problem no. $t Ends. - Solution time : $(sol_time) - Julia Time : $(julia_time) - Obj. value $(obj_value)")
 end
 
 # Saving results to file

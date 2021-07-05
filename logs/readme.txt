@@ -1,0 +1,1 @@
+powershell "julia -i benchmark_lp.jl | tee logs\automatic_IBM_CPLEX_logs.txt"
