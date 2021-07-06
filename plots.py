@@ -28,7 +28,7 @@ modes = ["Automatic", "Barrier", "Cross_Barrier", "Simplex_dual", "Simplex_prima
 global labels
 labels = {"A": "Automatic", "B": "Barrier - No Crossover","CB": "Barrier - With Crossover",
           "PS": "Simplex Primal", "DS": "Simplex Dual",}
-
+measure = "Solver_Time"
 def matrix_processing (x):
 
     x = x.drop([0])
@@ -58,7 +58,7 @@ print('Performance profile plotter initialized.')
 
 while True:
 
-    print("State plots needed. Choices : (Performance Profile 'P' / Graph Chart 'G' / Bar Chart 'B' / All 'A' )")
+    print("State plots needed. Choices : (Performance Profile 'P' / Performance Graph Chart 'G' / Success Bar Chart 'B' / All 'A' )")
 
     x = input()
 
@@ -78,7 +78,8 @@ while True:
         print("Wrong Input - Try Again")
 
 while True:
-
+    if to_plot == "Bar Chart":
+        break
     print("State performance measure. Choices : (Solver Time 'S' / Julia Time 'J' / Iterations 'I' )")
 
     x = input()
@@ -201,6 +202,7 @@ if criteria == "Solver":
                     print("Wrong Input. Keyword was wrong, already selected or not available.")
     
     matrix = np.zeros([35,])
+    success = np.zeros([3,])
 
     if "A" in selected:
 
@@ -208,33 +210,39 @@ if criteria == "Solver":
         automatic_res = matrix_processing(automatic)[0][measure]
         automatic_rep = matrix_processing(automatic)[1]
         matrix = np.vstack((matrix,automatic_res))
+        success = np.vstack((success,automatic_rep))
 
     if "B" in selected:
         barrier = pd.read_csv(f"results\\barrier\\Barrier_{solver}.csv")
         barrier_res = matrix_processing(barrier)[0][measure]
         barrier_rep = matrix_processing(barrier)[1]
         matrix = np.vstack((matrix,barrier_res))
+        success = np.vstack((success,barrier_rep))
 
     if "CB" in selected:
         cross_barrier = pd.read_csv(f"results\\cross_barrier\\Cross_Barrier_{solver}.csv")
         cross_barrier_res = matrix_processing(cross_barrier)[0][measure]
         cross_barrier_rep = matrix_processing(cross_barrier)[1]
         matrix = np.vstack((matrix,cross_barrier_res))
+        success = np.vstack((success,cross_barrier_rep))
 
     if "DS" in selected:
         d_simplex = pd.read_csv(f"results\\simplex_dual\\Simplex_dual_{solver}.csv")
         d_simplex_res = matrix_processing(d_simplex)[0][measure]
         d_simplex_rep = matrix_processing(d_simplex)[1]
         matrix = np.vstack((matrix,d_simplex_res))
+        success = np.vstack((success,d_simplex_rep))
 
     if "PS" in selected:
         p_simplex = pd.read_csv(f"results\\simplex_primal\\Simplex_primal_{solver}.csv")
         p_simplex_res = matrix_processing(p_simplex)[0][measure]
         p_simplex_rep = matrix_processing(p_simplex)[1]
         matrix = np.vstack((matrix,p_simplex_res))
+        success = np.vstack((success,p_simplex_rep))
 
    
     matrix = matrix.T[:,1:]
+    success = 100*success[1:,:]
 
     if to_plot == "Performance Profile" or to_plot == "All":
         best_in_row = (np.amin(matrix,1))
@@ -320,19 +328,24 @@ if criteria == "Solver":
 
     if to_plot == "Bar Chart" or to_plot == "All":
 
-        x = np.arange(matrix.shape[0])
-        dx = (np.arange(matrix.shape[1])-matrix.shape[1]/2.)/(matrix.shape[1]+2.)
-        d = 1./(matrix.shape[1]+2.)
+        x = np.arange(success.shape[0])
+        dx = (np.arange(success.shape[1])-success.shape[1]/2.)/(success.shape[1]+2.)
+        d = 1./(success.shape[1]+2.)
 
 
         fig, ax=plt.subplots()
-        for i in range(matrix.shape[1]):
-            ax.bar(x+dx[i],matrix[:,i], width=d,label = labels[selected[i]])
+        flag = ["Optimal","Time Limit","Infeasible"]
+        for i in range(success.shape[1]):
+            ax.bar(x+dx[i],success[:,i], width=d,label = flag[i])
 
+        modes = []
+        selected = sorted(selected, key=str.lower)
+        for i in selected:
+            modes.append(labels[i])
         ax.set_xticks(x)
-        ax.set_xticklabels(problems,fontsize = 7,rotation = 60)
-        ax.set(xlabel='Problem', ylabel='Times (s)',
-            title=f'Bar Chart of {solver} - Measure {measure}')
+        ax.set_xticklabels(modes,fontsize = 7,rotation = 0)
+        ax.set(xlabel='Mode', ylabel='Problem Status (%)',
+            title=f'Percentage of status result by Mode')
         plt.legend(framealpha=1)
         plt.show()
 
@@ -409,6 +422,7 @@ elif criteria == "Mode":
                     print("Wrong Input. Keyword was wrong, already selected or not available.")
     
     matrix = np.zeros([35,])
+    success = np.zeros([3,])
 
     if "Clp" in selected:
 
@@ -416,6 +430,7 @@ elif criteria == "Mode":
         clp_res = matrix_processing(clp)[0][measure]
         clp_rep = matrix_processing(clp)[1]
         matrix = np.vstack((matrix,clp_res))
+        success = np.vstack((success,clp_rep))
 
     if "FICO_Xpress" in selected:
 
@@ -423,6 +438,7 @@ elif criteria == "Mode":
         fico_xpress_res = matrix_processing(fico_xpress)[0][measure]
         fico_xpress_rep = matrix_processing(fico_xpress)[1]
         matrix = np.vstack((matrix,fico_xpress_res))
+        success = np.vstack((success,fico_xpress_rep))
 
     if "GuRoBi" in selected:
 
@@ -430,6 +446,7 @@ elif criteria == "Mode":
         gurobi_res = matrix_processing(gurobi)[0][measure]
         gurobi_rep = matrix_processing(gurobi)[1]
         matrix = np.vstack((matrix,gurobi_res))
+        success = np.vstack((success,gurobi_rep))
 
     if "HiGHS" in selected:
 
@@ -437,6 +454,8 @@ elif criteria == "Mode":
         highs_res = matrix_processing(highs)[0][measure]
         highs_rep = matrix_processing(highs)[1]
         matrix = np.vstack((matrix,highs_res))
+        success = np.vstack((success,highs_rep))
+
 
     if "IBM_CPLEX" in selected:
 
@@ -444,6 +463,7 @@ elif criteria == "Mode":
         ibm_cplex_res = matrix_processing(ibm_cplex)[0][measure]
         ibm_cplex_rep = matrix_processing(ibm_cplex)[1]
         matrix = np.vstack((matrix,ibm_cplex_res))
+        success = np.vstack((success,ibm_cplex_rep))
 
     if "Mosek" in selected:
 
@@ -451,6 +471,7 @@ elif criteria == "Mode":
         mosek_res = matrix_processing(mosek)[0][measure]
         mosek_rep = matrix_processing(mosek)[1]
         matrix = np.vstack((matrix,mosek_res))
+        success = np.vstack((success,mosek_rep))
 
     if "Tulip" in selected:
 
@@ -458,8 +479,11 @@ elif criteria == "Mode":
         tulip_res = matrix_processing(tulip)[0][measure]
         tulip_rep = matrix_processing(tulip)[1]
         matrix = np.vstack((matrix,tulip_res))
+        success = np.vstack((success,tulip_rep))
+
   
     matrix = matrix.T[:,1:]
+    success = 100*success[1:,:]
 
     if to_plot == "Performance Profile" or to_plot == "All":
         best_in_row = (np.amin(matrix,1))
@@ -556,19 +580,21 @@ elif criteria == "Mode":
 
     if to_plot == "Bar Chart" or to_plot == "All":
 
-        x = np.arange(matrix.shape[0])
-        dx = (np.arange(matrix.shape[1])-matrix.shape[1]/2.)/(matrix.shape[1]+2.)
-        d = 1./(matrix.shape[1]+2.)
+        x = np.arange(success.shape[0])
+        dx = (np.arange(success.shape[1])-success.shape[1]/2.)/(success.shape[1]+2.)
+        d = 1./(success.shape[1]+2.)
 
 
         fig, ax=plt.subplots()
-        for i in range(matrix.shape[1]):
-            ax.bar(x+dx[i],matrix[:,i], width=d,label = selected[i])
+        flag = ["Optimal","Time Limit","Infeasible"]
+        for i in range(success.shape[1]):
+            ax.bar(x+dx[i],success[:,i], width=d,label = flag[i])
+
+        selected = sorted(selected, key=str.lower)
 
         ax.set_xticks(x)
-        ax.set_xticklabels(problems,fontsize = 7,rotation = 60)
-        ax.set(xlabel='Problem', ylabel='Times (s)',
-            title=f'Bar Chart of {mode} - Measure {measure}')
+        ax.set_xticklabels(selected,fontsize = 7,rotation = 0)
+        ax.set(xlabel='Mode', ylabel='Problem Status (%)',
+            title=f'Percentage of status result by Solver')
         plt.legend(framealpha=1)
         plt.show()
-
