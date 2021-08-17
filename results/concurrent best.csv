@@ -1,0 +1,36 @@
+Problem,GuRoBi,CPLEX
+chromaticindex1024-7.mps,Dual Simplex,Primal Simplex
+cont1.mps,Barrier,Barrier
+cont11.mps,Barrier,Barrier
+datt256_lp.mps,Dual Simplex,Barrier
+ex10.mps,Dual Simplex,Barrier
+fhnw-binschedule0_lp.mps,Primal Simplex,Primal Simplex
+fome13.mps,Barrier,Barrier
+graph40-40_lp.mps,Barrier,Dual Simplex
+irish-electricity.mps,Barrier,Barrier
+L1_sixm1000obs.mps,Dual Simplex,Dual Simplex
+L1_sixm250obs.mps,Dual Simplex,Dual Simplex
+Linf_520c.mps,Barrier,Barrier
+neos-3025225_lp.mps,Barrier,Barrier
+neos-5052403-cygnet.mps,Barrier,Barrier
+neos-5251015_lp.mps,Barrier,Barrier
+neos.mps,Barrier,Barrier
+neos3.mps,Dual Simplex,Dual Simplex
+ns1687037.mps,Barrier,Barrier
+ns1688926.mps,Dual Simplex,Dual Simplex
+nug08-3rd.mps,Dual Simplex,Dual Simplex
+pds-100.mps,Dual Simplex,Dual Simplex
+physiciansched3-3.mps,Barrier,Dual Simplex
+qap15.mps,Barrier,Barrier
+rail4284.mps,Barrier,Barrier
+rmine15_lp.mps,Barrier,Barrier
+s100.mps,Barrier,Barrier
+s250r10.mps,Barrier,Barrier
+s82_lp.mps,Barrier,Barrier
+savsched1.mps,Barrier,Primal Simplex
+scpm1_lp.mps,Barrier,Barrier
+self.mps,Barrier,Barrier
+square41.mps,Dual Simplex,Barrier
+stat96v1.mps,Dual Simplex,Dual Simplex
+stormG2_1000.mps,Dual Simplex,Barrier
+supportcase10.mps,Barrier,Barrier

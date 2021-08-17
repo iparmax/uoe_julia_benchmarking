@@ -1,0 +1,6 @@
+status,FICO_Xpress,GuRoBi,IBM_CPLEX,Mosek
+Unscaled Geometric Mean,22.81,30.32,56.15,78.83
+Scaled Geometric Mean,1.00,1.33,2.46,3.46
+Optimal,35,34,32,31
+Time Limit,0,1,2,3
+Fail,0,0,1,1

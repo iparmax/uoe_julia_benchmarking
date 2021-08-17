@@ -1,3 +1,4 @@
+using Tulip: BarrierIterations
 using JuMP,MathOptInterface;
 using Mosek, MosekTools;
 using CPLEX;
@@ -131,11 +132,10 @@ total_lps = size(lp_list)[1];
 
 
 
-
 ### Global Parameters ###
 
 # Mode can be Automatic, Simplex or Barrier #
-mode = "Barrier"
+mode = "Automatic"
 
 # Time limit strictly integer - if zero no time limit set #
 time_limit = 30*60
@@ -144,10 +144,10 @@ time_limit = 30*60
 threads = 1
 
 # Selecting Solver
-solver = "Mosek"
+solver = "GuRoBi"
 
 # Simplex algorithm selection - irrelevant if mode not simplex
-simplex_algorithm = "primal"
+simplex_algorithm = "dual"
 
 # Crossover on/off - irrelevant if mode not barrier
 crossover = "on"
@@ -162,12 +162,9 @@ solver_results = DataFrame(Problem = String[],Status = String[],
 
 # Range of problems solved #
 start = 1
-finish = 3#total_lps
+finish = total_lps
 
 ### Global Parameters ###
-
-
-
 
 
 ### Main Loop begins ###
@@ -179,6 +176,8 @@ finish = 3#total_lps
 
 	# Setting Optimizer
 	set_optimizer(model,optimizers[solver]);
+
+
 	println("Optimizer $(solver) was set succesfully.")
 
 	# Setting time limit
@@ -204,6 +203,15 @@ finish = 3#total_lps
 			end
 		end
 	end
+
+	if mode == "Barrier"  && solver == "FICO Xpress"
+		set_optimizer_attribute(model, "CORESPERCPU",threads*2);
+	end
+
+	if mode == "Automatic"  && solver == "HiGHS"
+		set_optimizer_attribute(model, "presolve","off");
+	end
+
 
 	# Set algorithm
 	if mode != "Automatic"
@@ -313,14 +321,16 @@ finish = 3#total_lps
 		iterations = barrier_iterations(model)
 	elseif mode == "Simplex" && solver != "Clp"
 		iterations = simplex_iterations(model)
-	elseif mode == "Automatic" && solver != "Clp"
+	elseif mode == "Automatic" && solver != "Clp" && solver != "HiGHS"
 		iterations = barrier_iterations(model) + simplex_iterations(model)
+	elseif mode == "Automatic" && solver == "HiGHS"
+		iterations = simplex_iterations(model)
 	end
 
 	# Pushing results to CSV
 	results = (lp_list[t,1],status,obj_value,iterations,sol_time,julia_time)
 	push!(solver_results, results)
-	println("Results were pushed to file. Optimization of problem no. $t Ends. - Solution time : $(sol_time) - Julia Time : $(julia_time) - Obj. value $(obj_value)")
+	println("Results were pushed to file. Optimization of problem no. $t Ends. - Solution time : $(sol_time) - Julia Time : $(julia_time) - Obj. value $(obj_value) - Iterations $(iterations)")
 end
 
 # Saving results to file

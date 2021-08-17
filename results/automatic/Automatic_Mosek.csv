@@ -2,7 +2,7 @@ Problem,Status,Obj_Value,Iterations,Solver_Time,Julia_Time
 chromaticindex1024-7.mps,Optimal,3,7,8.344,12.8032381
 chromaticindex1024-7.mps,Optimal,3,7,8.047,8.2601412
 cont1.mps,Optimal,0.008782486,25,54.844,55.2871083
-cont11.mps,Infeasible,0,0,0,54.33348
+cont11.mps,Error,Inf,0,0,0
 datt256_lp.mps,Optimal,256,6,216.062,220.8929759
 ex10.mps,Optimal,100.0000095,7,16.281,16.7431222
 fhnw-binschedule0_lp.mps,Optimal,12632.88878,13,22.531,23.6194488
